@@ -30,6 +30,31 @@ public class App {
         t2.join();
     
 
+         System.out.println("\n===== SECCIÓN 2: Condición de Carrera (SIN sincronización) =====\n");
+         System.out.println("-- Ejercicio 2.1: anomalía sin sincronización --");
+         ContadorInseguro contadorInseguro = new ContadorInseguro();
+ 
+        Thread hiloInseguro1 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++) {
+                contadorInseguro.incrementar();
+            }
+        });
+ 
+        Thread hiloInseguro2 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++) {
+                contadorInseguro.incrementar();
+            }
+        });
+
+            hiloInseguro1.start();
+            hiloInseguro2.start();
+            hiloInseguro1.join(); // espera que hilo1 termine
+            hiloInseguro2.join(); // espera que hilo2 termine
+
+
+        System.out.println("Valor esperado:  20000");
+        System.out.println("Valor real (posiblemente menor): " + contadorInseguro.contador);
+        System.out.println("-- ¡Condición de carrera detectada!");
 
     }
 }

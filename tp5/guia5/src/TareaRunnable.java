@@ -9,7 +9,7 @@ public class TareaRunnable implements Runnable {
     public void run() {
         for (int i = 1; i <= 5; i++) {
             System.out.println("[" + nombre + " | hilo: "
-                    + Thread.currentThread().getName() + "] → " + i);
+                    + Thread.currentThread().getName() + "] = " + i);
         }
     }
 }
