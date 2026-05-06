@@ -32,17 +32,17 @@ public class App {
 
          System.out.println("\n===== SECCIÓN 2: Condición de Carrera (SIN sincronización) =====\n");
          System.out.println("-- Ejercicio 2.1: anomalía sin sincronización --");
-         ContadorInseguro contadorInseguro = new ContadorInseguro();
+         Contador contador = new Contador();
  
         Thread hiloInseguro1 = new Thread(() -> {
             for (int i = 0; i < 10000; i++) {
-                contadorInseguro.incrementar();
+                contador.incrementarInseguro();
             }
         });
  
         Thread hiloInseguro2 = new Thread(() -> {
             for (int i = 0; i < 10000; i++) {
-                contadorInseguro.incrementar();
+                contador.incrementarInseguro();
             }
         });
 
@@ -51,10 +51,56 @@ public class App {
             hiloInseguro1.join(); // espera que hilo1 termine
             hiloInseguro2.join(); // espera que hilo2 termine
 
+        System.out.println("Valor esperado:  20000");
+        System.out.println("Valor real (posiblemente menor): " + contador.getCopias());
+        System.out.println("-- ¡Condición de carrera detectada!");
+        contador.reset(); // reiniciamos el contador para las siguientespruebas
+
+
+        System.out.println("\n===== SECCIÓN 3: Solución con Sincronización =====\n");
+        System.out.println("-- Ejercicio 3.1: método synchronized --");
+        
+        Thread hiloSeguro1 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++){
+                contador.incrementarSyncMetodo(); // primera solucion
+            }
+        });
+
+        Thread hiloSeguro2 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++) {
+                contador.incrementarSyncMetodo(); // Segunda solucion
+        }
+    });
+
+            hiloSeguro1.start();
+            hiloSeguro2.start();
+            hiloSeguro1.join();
+            hiloSeguro2.join();
 
         System.out.println("Valor esperado:  20000");
-        System.out.println("Valor real (posiblemente menor): " + contadorInseguro.contador);
-        System.out.println("-- ¡Condición de carrera detectada!");
+        System.out.println("Valor real: " + contador.getCopias());
+        contador.reset();
 
+
+        System.out.println("\n-- Ejercicio 3.2: bloque synchronized --");
+        Thread hiloBloque1 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++) {
+                contador.incrementarSyncBloque(); // Solución 2
+            }
+        });
+
+        Thread hiloBloque2 = new Thread(() -> {
+            for (int i = 0; i < 10000; i++) {
+                contador.incrementarSyncBloque(); // Solución 2
+            }
+        });
+
+        hiloBloque1.start();
+        hiloBloque2.start();
+        hiloBloque1.join();
+        hiloBloque2.join();
+
+        System.out.println("Valor esperado:  20000");
+        System.out.println("Valor real: " + contador.getCopias());
     }
 }
